@@ -9,11 +9,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 public class ProductController {
     @Autowired
     private ProductService productService;
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(){
+       List<Product> productList = productService.getProducts();
+       //restful設計理念中 每個路徑代表一個資源 只要資源存在就回傳OK
+       return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
 
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
