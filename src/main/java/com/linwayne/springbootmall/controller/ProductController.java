@@ -1,6 +1,7 @@
 package com.linwayne.springbootmall.controller;
 
 import com.linwayne.springbootmall.constant.ProductCategory;
+import com.linwayne.springbootmall.dto.ProductQueryParams;
 import com.linwayne.springbootmall.dto.ProductRequest;
 import com.linwayne.springbootmall.model.Product;
 import com.linwayne.springbootmall.service.ProductService;
@@ -23,7 +24,11 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category,
             @RequestParam(required = false) String search
             ){
-       List<Product> productList = productService.getProducts(category,search);
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setProductCategory(category);
+        productQueryParams.setSearch(search);
+
+       List<Product> productList = productService.getProducts(productQueryParams);
        //restful設計理念中 每個路徑代表一個資源 只要資源存在就回傳OK
        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
