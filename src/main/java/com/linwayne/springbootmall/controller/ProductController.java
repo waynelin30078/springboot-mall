@@ -21,12 +21,20 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
             //SpringBoot 會自動將前端傳來的String轉Enum
+
+            // 查詢條件 Filtering
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+
+            // 排序 Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            @RequestParam(defaultValue = "desc") String sort
             ){
         ProductQueryParams productQueryParams = new ProductQueryParams();
         productQueryParams.setProductCategory(category);
         productQueryParams.setSearch(search);
+        productQueryParams.setOrderBy(orderBy);
+        productQueryParams.setSort(sort);
 
        List<Product> productList = productService.getProducts(productQueryParams);
        //restful設計理念中 每個路徑代表一個資源 只要資源存在就回傳OK
