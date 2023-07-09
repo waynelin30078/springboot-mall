@@ -1,5 +1,6 @@
 package com.linwayne.springbootmall.dao.impl;
 
+import com.linwayne.springbootmall.constant.ProductCategory;
 import com.linwayne.springbootmall.dao.ProductDao;
 import com.linwayne.springbootmall.dto.ProductRequest;
 import com.linwayne.springbootmall.model.Product;
@@ -22,13 +23,28 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getProducts(ProductCategory category, String search) {
         String sql = "SELECT product_id,product_name, category," +
                 " image_url, price, stock, description, created_date," +
-                " last_modified_date FROM product";
+                " last_modified_date FROM product WHERE 1=1";
+        //加上 WHERE 1=1 的目的是方便後續拼接字串 使用JPA時無影響
 
-        Map<String,Object>map=new HashMap<>();
-        List<Product> productList = namedParameterJdbcTemplate.query(sql,map,new ProductRowMapper());
+        Map<String, Object> map = new HashMap<>();
+
+        if (category != null) {
+            //AND 前需要加上空白鍵
+            sql = sql + " AND category = :category";
+            map.put("category", category.name());
+        }
+
+        if (search != null) {
+            //AND 前需要加上空白鍵
+            sql = sql + " AND product_name LIKE :search";
+            map.put("search", "%" + search + "%");
+        }
+
+
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         return productList;
     }
 
@@ -84,17 +100,17 @@ public class ProductDaoImpl implements ProductDao {
                 "stock =:stock, description = :description, last_modified_date = :lastModifiedDate " +
                 "WHERE product_id = :productId";
 
-        Map<String,Object> map = new HashMap<>();
-        map.put("productId",productId);
-        map.put("productName",productRequest.getProductName());
-        map.put("category",productRequest.getCategory().toString());
-        map.put("imageUrl",productRequest.getImageUrl());
-        map.put("price",productRequest.getPrice());
-        map.put("stock",productRequest.getPrice());
-        map.put("description",productRequest.getDescription());
-        map.put("lastModifiedDate",new Date());
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId", productId);
+        map.put("productName", productRequest.getProductName());
+        map.put("category", productRequest.getCategory().toString());
+        map.put("imageUrl", productRequest.getImageUrl());
+        map.put("price", productRequest.getPrice());
+        map.put("stock", productRequest.getPrice());
+        map.put("description", productRequest.getDescription());
+        map.put("lastModifiedDate", new Date());
 
-        namedParameterJdbcTemplate.update(sql,map);
+        namedParameterJdbcTemplate.update(sql, map);
 
 
     }
@@ -103,9 +119,9 @@ public class ProductDaoImpl implements ProductDao {
     public void deleteProductById(Integer productId) {
         String sql = "DELETE FROM product WHERE product_id = :productId";
 
-        Map<String ,Object>map= new HashMap<>();
-        map.put("productId",productId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("productId", productId);
 
-        namedParameterJdbcTemplate.update(sql,map);
+        namedParameterJdbcTemplate.update(sql, map);
     }
 }

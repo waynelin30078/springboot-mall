@@ -1,5 +1,6 @@
 package com.linwayne.springbootmall.controller;
 
+import com.linwayne.springbootmall.constant.ProductCategory;
 import com.linwayne.springbootmall.dto.ProductRequest;
 import com.linwayne.springbootmall.model.Product;
 import com.linwayne.springbootmall.service.ProductService;
@@ -17,8 +18,12 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(){
-       List<Product> productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProducts(
+            //SpringBoot 會自動將前端傳來的String轉Enum
+            @RequestParam(required = false) ProductCategory category,
+            @RequestParam(required = false) String search
+            ){
+       List<Product> productList = productService.getProducts(category,search);
        //restful設計理念中 每個路徑代表一個資源 只要資源存在就回傳OK
        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
