@@ -31,7 +31,7 @@ public class ProductDaoImpl implements ProductDao {
         //加上 WHERE 1=1 的目的是方便後續拼接字串 使用JPA時無影響
 
         Map<String, Object> map = new HashMap<>();
-
+        //查詢條件
         if (productQueryParams.getProductCategory() != null) {
             //AND 前需要加上空白鍵
             sql = sql + " AND category = :category";
@@ -43,8 +43,12 @@ public class ProductDaoImpl implements ProductDao {
             sql = sql + " AND product_name LIKE :search";
             map.put("search", "%" + productQueryParams.getSearch() + "%");
         }
-
+        //排序 需注意這個部分只能用串接的
         sql = sql + " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+        //分頁
+        sql = sql + " LIMIT :limit OFFSET :offset";
+        map.put("limit", productQueryParams.getLimit());
+        map.put("offset", productQueryParams.getOffset());
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
