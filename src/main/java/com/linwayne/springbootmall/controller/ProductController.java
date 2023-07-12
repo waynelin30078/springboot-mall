@@ -1,5 +1,6 @@
 package com.linwayne.springbootmall.controller;
 
+import com.linwayne.springbootmall.Util.Page;
 import com.linwayne.springbootmall.constant.ProductCategory;
 import com.linwayne.springbootmall.dto.ProductQueryParams;
 import com.linwayne.springbootmall.dto.ProductRequest;
@@ -22,7 +23,7 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             //SpringBoot 會自動將前端傳來的String轉Enum
 
             // 查詢條件 Filtering
@@ -46,9 +47,21 @@ public class ProductController {
         productQueryParams.setLimit(limit);
         productQueryParams.setOffset(offset);
 
+        //取得 product list
         List<Product> productList = productService.getProducts(productQueryParams);
         //restful設計理念中 每個路徑代表一個資源 只要資源存在就回傳OK
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+
+        //取得 product 總數
+        Integer total = productService.countProduct(productQueryParams);
+
+        //分頁
+        Page<Product>page=new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResults(productList);
+
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     @GetMapping("/products/{productId}")
