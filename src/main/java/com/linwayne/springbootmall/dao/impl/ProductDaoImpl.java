@@ -115,7 +115,7 @@ public class ProductDaoImpl implements ProductDao {
         map.put("category", productRequest.getCategory().toString());
         map.put("imageUrl", productRequest.getImageUrl());
         map.put("price", productRequest.getPrice());
-        map.put("stock", productRequest.getPrice());
+        map.put("stock", productRequest.getStock());
         map.put("description", productRequest.getDescription());
         map.put("lastModifiedDate", new Date());
 
