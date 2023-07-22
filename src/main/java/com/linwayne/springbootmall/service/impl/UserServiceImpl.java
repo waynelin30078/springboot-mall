@@ -1,6 +1,7 @@
 package com.linwayne.springbootmall.service.impl;
 
 import com.linwayne.springbootmall.dao.UserDao;
+import com.linwayne.springbootmall.dto.UserLoginRequest;
 import com.linwayne.springbootmall.dto.UserRegisterRequest;
 import com.linwayne.springbootmall.model.User;
 import com.linwayne.springbootmall.service.UserService;
@@ -23,8 +24,8 @@ public class UserServiceImpl implements UserService {
         //檢查註冊的email
         User user = userDao.getUserByEmail(userRegisterRequest.getEmail());
 
-        if(user!=null){
-            log.warn("該 email {} 已經被註冊",userRegisterRequest.getEmail());
+        if (user != null) {
+            log.warn("該 email {} 已經被註冊", userRegisterRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         //創建帳號
@@ -34,5 +35,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer userId) {
         return userDao.getUserById(userId);
+    }
+
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+
+        if (user == null) {
+            log.warn("該 email {} 尚未註冊",userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.getPassword().equals(userLoginRequest.getPassword())){
+            return user;
+        }else{
+            log.warn("email {} 的密碼不正確",userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
